@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    :root {
+      --azul: #344d27;
+      --azul-escuro: #26391d;
+      --cinza-bg: #f4f6f8;
+      --cinza-borda: #dfe3e8;
+      --texto: #1f2933;
+      --verde: #2e7d32;
+      --amarelo: #f9a825;
+      --vermelho: #c62828;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: var(--cinza-bg);
+      color: var(--texto);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 18px;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+    }
+
+    .topo {
+      display: flex;
+      gap: 18px;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+
+    .subtitulo {
+      margin: 8px 0 0;
+      color: #5b6773;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0 24px;
+    }
+
+    .btn {
+      padding: 13px 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      background: var(--azul);
+      color: white;
+      transition: .15s ease;
+    }
+
+    .btn:hover {
+      background: var(--azul-escuro);
+      transform: translateY(-1px);
+    }
+
+    .btn.secundario {
+      background: #eef2f7;
+      color: #243b53;
+    }
+
+    .btn.secundario:hover {
+      background: #d9e2ec;
+    }
+
+    .secao {
+      display: none;
+      border-top: 1px solid var(--cinza-borda);
+      padding-top: 22px;
+    }
+
+    .secao.ativa {
+      display: block;
+    }
+
+    .grid-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .campo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--cinza-borda);
+      border-radius: 9px;
+      font: inherit;
+      background: white;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .acoes-form {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tarefas {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .tarefa {
+      border: 1px solid var(--cinza-borda);
+      border-radius: 12px;
+      padding: 15px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+    }
+
+    .tarefa h3 {
+      margin-bottom: 10px;
+      color: var(--azul);
+      font-size: 17px;
+    }
+
+    .info {
+      margin: 5px 0;
+      line-height: 1.35;
+    }
+
+    .painel-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .indicador {
+      border-radius: 12px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid var(--cinza-borda);
+    }
+
+    .indicador .rotulo {
+      color: #5b6773;
+      font-size: 13px;
+      font-weight: 700;
+      min-height: 36px;
+    }
+
+    .indicador .valor {
+      font-size: 30px;
+      font-weight: 800;
+      margin-top: 8px;
+    }
+
+    .percentual {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .barra {
+      height: 16px;
+      background: #d9e2ec;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .barra span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--verde);
+      transition: width .25s ease;
+    }
+
+    .mensagem {
+      display: none;
+      margin: 14px 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .mensagem.sucesso {
+      display: block;
+      color: #1b5e20;
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+    }
+
+    .mensagem.erro {
+      display: block;
+      color: #b71c1c;
+      background: #ffebee;
+      border: 1px solid #ffcdd2;
+    }
+
+    .vazio {
+      color: #666;
+      font-style: italic;
+    }
+
+    .carregando {
+      opacity: .7;
+      pointer-events: none;
+    }
+
+    @media (max-width: 850px) {
+      .menu,
+      .painel-grid,
+      .tarefas,
+      .grid-form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="card" id="app">
+      <div class="topo">
+        <div>
+          <h1>📅 Obra escritório 3M Agropecuária</h1>
+          <p class="subtitulo">Sistema de gerenciamento de atividades do Escritório 3M Agropecuária.</p>
+        </div>
+        <button class="btn secundario" type="button" onclick="carregarDados()">Atualizar dados</button>
+      </div>
+
+      <div class="menu">
+        <button class="btn" type="button" onclick="mostrarSecao('nova')">➕ Nova Tarefa</button>
+        <button class="btn" type="button" onclick="mostrarSecao('atualizar')">✏️ Atualizar Tarefa</button>
+        <button class="btn" type="button" onclick="abrirCalendario()">📆 Abrir Calendário</button>
+        <button class="btn" type="button" onclick="mostrarPainel()">📊 Painel de Controle</button>
+      </div>
+
+      <div id="mensagem" class="mensagem"></div>
+
+      <section id="secao-nova" class="secao ativa">
+        <h2>➕ Nova Tarefa</h2>
+        <form id="form-nova" onsubmit="salvarNovaTarefa(event)">
+          <div class="grid-form">
+            <div class="campo">
+              <label for="nova-atividade">Atividade</label>
+              <input id="nova-atividade" name="atividade" type="text" required>
+            </div>
+
+            <div class="campo">
+              <label for="nova-responsavel">Responsável</label>
+              <select id="nova-responsavel" name="responsavel" required></select>
+            </div>
+
+            <div class="campo">
+              <label for="nova-previsao-inicio">Previsão de data de início</label>
+              <input id="nova-previsao-inicio" name="previsaoInicio" type="date" required>
+            </div>
+
+            <div class="campo">
+              <label for="nova-previsao-fim">Previsão de data de fim</label>
+              <input id="nova-previsao-fim" name="previsaoFim" type="date" required>
+            </div>
+          </div>
+
+          <div class="acoes-form">
+            <button class="btn" type="submit">Salvar tarefa</button>
+            <button class="btn secundario" type="reset">Limpar</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="secao-atualizar" class="secao">
+        <h2>✏️ Atualizar Tarefa</h2>
+        <form id="form-atualizar" onsubmit="salvarAtualizacaoTarefa(event)">
+          <div class="grid-form">
+            <div class="campo">
+              <label for="atualizar-codigo">Tarefa</label>
+              <select id="atualizar-codigo" name="codigo" required onchange="preencherFormularioAtualizacao()"></select>
+            </div>
+
+            <div class="campo">
+              <label for="atualizar-responsavel">Responsável</label>
+              <select id="atualizar-responsavel" name="responsavel" required></select>
+            </div>
+
+            <div class="campo">
+              <label for="atualizar-data-inicio">Data início</label>
+              <input id="atualizar-data-inicio" name="dataInicio" type="date">
+            </div>
+
+            <div class="campo">
+              <label for="atualizar-data-fim">Data fim</label>
+              <input id="atualizar-data-fim" name="dataFim" type="date">
+            </div>
+
+            <div class="campo" style="grid-column: 1 / -1;">
+              <label for="atualizar-observacoes">Observações</label>
+              <textarea id="atualizar-observacoes" name="observacoes"></textarea>
+            </div>
+          </div>
+
+          <div class="acoes-form">
+            <button class="btn" type="submit">Atualizar tarefa</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="secao-painel" class="secao">
+        <h2>📊 Painel de Controle</h2>
+        <div id="painel">Carregando painel...</div>
+      </section>
+
+      <section id="secao-lista" class="secao">
+        <h2>Tarefas cadastradas</h2>
+        <div id="tarefas">Carregando tarefas...</div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    let responsaveis = [];
+    let tarefas = [];
+    let painel = null;
+    let calendarioUrl = "https://docs.google.com/spreadsheets/d/1hmlCTFOWXL3kTunJ1284mLC7dBIyhmZfjD7nP4o8kdU/edit?gid=1692204366#gid=1692204366";
+
+    function carregarDados() {
+      setCarregando(true);
+      limparMensagem();
+
+      google.script.run
+        .withSuccessHandler(function(config) {
+          responsaveis = config.responsaveis || [];
+          calendarioUrl = config.calendarioUrl || calendarioUrl;
+          popularResponsaveis();
+          carregarTarefas();
+        })
+        .withFailureHandler(mostrarErro)
+        .obterConfiguracaoApp();
+    }
+
+    function carregarTarefas() {
+      google.script.run
+        .withSuccessHandler(function(dados) {
+          tarefas = dados || [];
+          renderizarListaTarefas();
+          popularSelectTarefas();
+          carregarPainel(false);
+          setCarregando(false);
+        })
+        .withFailureHandler(mostrarErro)
+        .listarTarefas();
+    }
+
+    function carregarPainel(exibir) {
+      google.script.run
+        .withSuccessHandler(function(dados) {
+          painel = dados;
+          renderizarPainel();
+          if (exibir) mostrarSecao("painel");
+        })
+        .withFailureHandler(mostrarErro)
+        .obterPainelControle();
+    }
+
+    function mostrarSecao(nome) {
+      document.querySelectorAll(".secao").forEach(function(secao) {
+        secao.classList.remove("ativa");
+      });
+
+      const secao = document.getElementById("secao-" + nome);
+      if (secao) secao.classList.add("ativa");
+
+      if (nome === "lista") renderizarListaTarefas();
+    }
+
+    function mostrarPainel() {
+      carregarPainel(true);
+    }
+
+    function abrirCalendario() {
+      window.open(calendarioUrl, "_blank", "noopener");
+    }
+
+    function popularResponsaveis() {
+      const selects = [
+        document.getElementById("nova-responsavel"),
+        document.getElementById("atualizar-responsavel")
+      ];
+
+      selects.forEach(function(select) {
+        select.innerHTML = '<option value="">Selecione...</option>' +
+          responsaveis.map(function(nome) {
+            return '<option value="' + escapeAttr(nome) + '">' + escapeHtml(nome) + '</option>';
+          }).join("");
+      });
+    }
+
+    function popularSelectTarefas() {
+      const select = document.getElementById("atualizar-codigo");
+
+      if (!tarefas.length) {
+        select.innerHTML = '<option value="">Nenhuma tarefa cadastrada</option>';
+        return;
+      }
+
+      select.innerHTML = '<option value="">Selecione...</option>' +
+        tarefas.map(function(tarefa) {
+          const label = tarefa.codigo + " - " + tarefa.atividade;
+          return '<option value="' + escapeAttr(tarefa.codigo) + '">' + escapeHtml(label) + '</option>';
+        }).join("");
+    }
+
+    function preencherFormularioAtualizacao() {
+      const codigo = document.getElementById("atualizar-codigo").value;
+      const tarefa = tarefas.find(function(item) {
+        return item.codigo === codigo;
+      });
+
+      document.getElementById("atualizar-responsavel").value = tarefa ? tarefa.responsavel : "";
+      document.getElementById("atualizar-data-inicio").value = tarefa ? tarefa.dataInicioInput : "";
+      document.getElementById("atualizar-data-fim").value = tarefa ? tarefa.dataFimInput : "";
+      document.getElementById("atualizar-observacoes").value = tarefa ? tarefa.observacoes : "";
+    }
+
+    function salvarNovaTarefa(event) {
+      event.preventDefault();
+      setCarregando(true);
+      limparMensagem();
+
+      const form = event.target;
+      const payload = {
+        atividade: form.atividade.value,
+        responsavel: form.responsavel.value,
+        previsaoInicio: form.previsaoInicio.value,
+        previsaoFim: form.previsaoFim.value
+      };
+
+      google.script.run
+        .withSuccessHandler(function(resposta) {
+          form.reset();
+          atualizarEstadoComResposta(resposta);
+        })
+        .withFailureHandler(mostrarErro)
+        .criarTarefa(payload);
+    }
+
+    function salvarAtualizacaoTarefa(event) {
+      event.preventDefault();
+      setCarregando(true);
+      limparMensagem();
+
+      const form = event.target;
+      const payload = {
+        codigo: form.codigo.value,
+        responsavel: form.responsavel.value,
+        dataInicio: form.dataInicio.value,
+        dataFim: form.dataFim.value,
+        observacoes: form.observacoes.value
+      };
+
+      google.script.run
+        .withSuccessHandler(atualizarEstadoComResposta)
+        .withFailureHandler(mostrarErro)
+        .atualizarTarefa(payload);
+    }
+
+    function atualizarEstadoComResposta(resposta) {
+      tarefas = resposta.tarefas || tarefas;
+      painel = resposta.painel || painel;
+      renderizarListaTarefas();
+      popularSelectTarefas();
+      renderizarPainel();
+      mostrarMensagem(resposta.mensagem || "Operação concluída.", "sucesso");
+      setCarregando(false);
+    }
+
+    function renderizarPainel() {
+      const container = document.getElementById("painel");
+
+      if (!painel) {
+        container.innerHTML = '<div class="vazio">Painel ainda não carregado.</div>';
+        return;
+      }
+
+      const percentual = Number(painel.percentualConcluido || 0);
+
+      container.innerHTML = `
+        <div class="painel-grid">
+          <div class="indicador">
+            <div class="rotulo">Total de atividades</div>
+            <div class="valor">${escapeHtml(painel.total)}</div>
+          </div>
+          <div class="indicador">
+            <div class="rotulo">⚪ Não iniciado</div>
+            <div class="valor">${escapeHtml(painel.naoIniciado)}</div>
+          </div>
+          <div class="indicador">
+            <div class="rotulo">🟡 Em andamento</div>
+            <div class="valor">${escapeHtml(painel.emAndamento)}</div>
+          </div>
+          <div class="indicador">
+            <div class="rotulo">🔴 Atrasado</div>
+            <div class="valor">${escapeHtml(painel.atrasado)}</div>
+          </div>
+          <div class="indicador">
+            <div class="rotulo">🟢 Concluído</div>
+            <div class="valor">${escapeHtml(painel.concluido)}</div>
+          </div>
+        </div>
+
+        <div class="percentual">
+          <strong>Percentual concluído</strong>
+          <div style="font-size: 36px; font-weight: 800; margin-top: 6px;">${percentual}%</div>
+          <div class="barra"><span style="width: ${Math.max(0, Math.min(100, percentual))}%"></span></div>
+        </div>
+      `;
+    }
+
+    function renderizarListaTarefas() {
+      const container = document.getElementById("tarefas");
+
+      if (!tarefas.length) {
+        container.innerHTML = '<div class="vazio">Nenhuma tarefa cadastrada.</div>';
+        return;
+      }
+
+      container.innerHTML = '<div class="tarefas">' + tarefas.map(function(tarefa) {
+        return `
+          <div class="tarefa">
+            <h3>📋 ${escapeHtml(tarefa.codigo)} - ${escapeHtml(tarefa.atividade)}</h3>
+            <div class="info"><strong>👤 Responsável:</strong> ${escapeHtml(tarefa.responsavel || "-")}</div>
+            <div class="info"><strong>📅 Previsão Início:</strong> ${escapeHtml(tarefa.previsaoInicio || "-")}</div>
+            <div class="info"><strong>🚀 Data Início:</strong> ${escapeHtml(tarefa.dataInicio || "-")}</div>
+            <div class="info"><strong>⏳ Previsão Fim:</strong> ${escapeHtml(tarefa.previsaoFim || "-")}</div>
+            <div class="info"><strong>✅ Data Fim:</strong> ${escapeHtml(tarefa.dataFim || "-")}</div>
+            <div class="info"><strong>📌 Prazo:</strong> ${escapeHtml(tarefa.statusPrazo || "-")}</div>
+            <div class="info"><strong>📊 Status:</strong> ${escapeHtml(tarefa.status || "-")}</div>
+            <div class="info"><strong>📝 Observações:</strong> ${escapeHtml(tarefa.observacoes || "-")}</div>
+          </div>
+        `;
+      }).join("") + '</div>';
+    }
+
+    function mostrarMensagem(texto, tipo) {
+      const el = document.getElementById("mensagem");
+      el.className = "mensagem " + tipo;
+      el.textContent = texto;
+    }
+
+    function mostrarErro(erro) {
+      const mensagem = erro && erro.message ? erro.message : String(erro);
+      mostrarMensagem("Erro: " + mensagem, "erro");
+      setCarregando(false);
+    }
+
+    function limparMensagem() {
+      const el = document.getElementById("mensagem");
+      el.className = "mensagem";
+      el.textContent = "";
+    }
+
+    function setCarregando(carregando) {
+      document.getElementById("app").classList.toggle("carregando", carregando);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    carregarDados();
+  </script>
+</body>
+</html>
