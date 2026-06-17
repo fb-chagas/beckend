@@ -31,6 +31,16 @@ var MESES_CAL = [
   {ano: 2026, mes: 12}
 ];
 
+var ESTRUTURA_CALENDARIO = {
+  "2026-6": [3, 9, 15, 21, 27],
+  "2026-7": [37, 43, 49, 55, 61],
+  "2026-8": [71, 77, 83, 89, 95, 101],
+  "2026-9": [111, 117, 123, 129, 135],
+  "2026-10": [145, 151, 157, 163, 169],
+  "2026-11": [179, 185, 191, 197, 203],
+  "2026-12": [213, 219, 225, 231, 237]
+};
+
 // ─────────────────────────────────────────────
 
 function acionadorEdicao(e) {
@@ -382,60 +392,7 @@ function preencherCalendario() {
     }
   });
 
-  var lastRow = calSheet.getLastRow();
-  var allVals = calSheet.getRange(1, 1, lastRow, 7).getValues();
-  var allDisplayVals = calSheet.getRange(1, 1, lastRow, 7).getDisplayValues();
-  var anoAtual = null;
-  var mesAtual = null;
-
-  for (var r = 0; r < lastRow; r++) {
-    var mesEncontrado = obterMesCalendario_(allDisplayVals[r][0]);
-
-    if (mesEncontrado) {
-      anoAtual = mesEncontrado.ano;
-      mesAtual = mesEncontrado.mes;
-
-      continue;
-    }
-
-    if (!anoAtual) continue;
-
-    for (var c = 0; c < 7; c++) {
-      var val = allVals[r][c];
-      var dia = obterDiaCalendario_(val) || obterDiaCalendario_(allDisplayVals[r][c]);
-
-      if (!dia) continue;
-
-      var key = anoAtual + "-" + mesAtual + "-" + dia;
-      var tarefas = mapa[key] || [];
-
-      for (var tr = 1; tr <= 5; tr++) {
-        var cell = calSheet.getRange(r + 1 + tr, c + 1);
-
-        cell.setValue("");
-        cell.setBackground("#FFFFFF");
-        cell.setFontColor("#333333");
-        cell.setFontWeight("normal");
-        cell.setFontSize(8);
-      }
-
-      for (var idx = 0; idx < Math.min(tarefas.length, 5); idx++) {
-        var t = tarefas[idx];
-        var taskCell = calSheet.getRange(r + 2 + idx, c + 1);
-        var cor = coresMap[t.resp] || {
-          fundo: "#F2F2F2",
-          texto: "#333333"
-        };
-
-        taskCell.setValue(t.ativ);
-        taskCell.setBackground(cor.fundo);
-        taskCell.setFontColor(cor.texto);
-        taskCell.setFontWeight("bold");
-        taskCell.setFontSize(8);
-        taskCell.setWrap(false);
-      }
-    }
-  }
+  preencherEstruturaCalendario_(calSheet, mapa, coresMap);
 
   Logger.log("Calendário concluído.");
 }
@@ -512,24 +469,54 @@ function formatarLinhaTarefa_(sheet, row) {
   sheet.getRange(row, 7, 1, 2).setNumberFormat("dd/MM/yyyy");
 }
 
-function obterMesCalendario_(val) {
-  var texto = normalizarChave_(val);
+function preencherEstruturaCalendario_(calSheet, mapa, coresMap) {
+  Object.keys(ESTRUTURA_CALENDARIO).forEach(function(chaveMes) {
+    var linhasDias = ESTRUTURA_CALENDARIO[chaveMes];
 
-  if (texto.indexOf("2026") === -1) return null;
+    linhasDias.forEach(function(linhaDia) {
+      var valoresDias = calSheet.getRange(linhaDia, 1, 1, 7).getValues()[0];
+      var valoresDiasDisplay = calSheet.getRange(linhaDia, 1, 1, 7).getDisplayValues()[0];
 
-  for (var i = 0; i < MESES_CAL.length; i++) {
-    var mes = MESES_CAL[i];
-    var nomeMes = normalizarChave_(
-      new Date(mes.ano, mes.mes - 1, 1)
-        .toLocaleString("pt-BR", {month: "long"})
-    );
+      for (var c = 0; c < 7; c++) {
+        var dia = obterDiaCalendario_(valoresDias[c]) ||
+          obterDiaCalendario_(valoresDiasDisplay[c]);
 
-    if (texto.indexOf(nomeMes) !== -1) {
-      return mes;
-    }
+        if (!dia) continue;
+
+        limparCelulasTarefasDoDia_(calSheet, linhaDia, c + 1);
+
+        var tarefas = mapa[chaveMes + "-" + dia] || [];
+
+        for (var idx = 0; idx < Math.min(tarefas.length, 5); idx++) {
+          var tarefa = tarefas[idx];
+          var cell = calSheet.getRange(linhaDia + 1 + idx, c + 1);
+          var cor = coresMap[tarefa.resp] || {
+            fundo: "#F2F2F2",
+            texto: "#333333"
+          };
+
+          cell.setValue(tarefa.ativ);
+          cell.setBackground(cor.fundo);
+          cell.setFontColor(cor.texto);
+          cell.setFontWeight("bold");
+          cell.setFontSize(8);
+          cell.setWrap(false);
+        }
+      }
+    });
+  });
+}
+
+function limparCelulasTarefasDoDia_(calSheet, linhaDia, colunaDia) {
+  for (var i = 1; i <= 5; i++) {
+    var cell = calSheet.getRange(linhaDia + i, colunaDia);
+
+    cell.setValue("");
+    cell.setBackground("#FFFFFF");
+    cell.setFontColor("#333333");
+    cell.setFontWeight("normal");
+    cell.setFontSize(8);
   }
-
-  return null;
 }
 
 function obterDiaCalendario_(val) {
@@ -547,13 +534,6 @@ function obterDiaCalendario_(val) {
   }
 
   return null;
-}
-
-function normalizarChave_(str) {
-  return normalizar(str)
-    .toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
 }
 
 function normalizar(str) {
