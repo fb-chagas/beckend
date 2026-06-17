@@ -410,10 +410,11 @@ function preencherCalendario() {
 
     for (var c = 0; c < 7; c++) {
       var val = allVals[r][c];
+      var dia = obterDiaCalendario_(val);
 
-      if (typeof val !== "number" || val < 1 || val > 31) continue;
+      if (!dia) continue;
 
-      var key = anoAtual + "-" + mesAtual + "-" + val;
+      var key = anoAtual + "-" + mesAtual + "-" + dia;
       var tarefas = mapa[key] || [];
 
       for (var tr = 1; tr <= 5; tr++) {
@@ -517,6 +518,23 @@ function criarMapaCores_() {
 function formatarLinhaTarefa_(sheet, row) {
   sheet.getRange(row, 4, 1, 2).setNumberFormat("dd/MM/yyyy");
   sheet.getRange(row, 7, 1, 2).setNumberFormat("dd/MM/yyyy");
+}
+
+function obterDiaCalendario_(val) {
+  if (typeof val === "number" && val >= 1 && val <= 31) {
+    return Math.floor(val);
+  }
+
+  if (typeof val === "string") {
+    var match = val.trim().match(/^(\d{1,2})(?:[.,]0+)?$/);
+
+    if (match) {
+      var dia = parseInt(match[1], 10);
+      return dia >= 1 && dia <= 31 ? dia : null;
+    }
+  }
+
+  return null;
 }
 
 function normalizar(str) {
