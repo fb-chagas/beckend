@@ -58,9 +58,12 @@ function acionadorEdicao(e) {
 }
 
 function executarTudo() {
+  SpreadsheetApp.flush();
   atualizarStatusDaLista();
+  SpreadsheetApp.flush();
   colorirLista();
   preencherCalendario();
+  SpreadsheetApp.flush();
 }
 
 // ─────────────────────────────────────────────
@@ -163,6 +166,7 @@ function criarTarefa(payload) {
     ]]);
 
     formatarLinhaTarefa_(sheet, row);
+    SpreadsheetApp.flush();
     executarTudo();
 
     return {
@@ -213,6 +217,7 @@ function atualizarTarefa(payload) {
   sheet.getRange(row, 10).setValue(observacoes);
 
   formatarLinhaTarefa_(sheet, row);
+  SpreadsheetApp.flush();
   executarTudo();
 
   return {
