@@ -349,21 +349,21 @@ function preencherCalendario() {
   dados.forEach(function(row) {
     var ativ = normalizar(row[0]); // B = Atividade
     var resp = normalizar(row[1]); // C = Responsavel
+    var prevIni = row[2];          // D = Previsao Data Inicio
     var ini = row[3];              // E = Data Inicio
-    var prev = row[5];             // G = Previsao Data Fim
+    var prevFim = row[5];          // G = Previsao Data Fim
     var fim = row[6];              // H = Data Fim
 
-    if (!ativ || !resp || !ini) return;
+    if (!ativ || !resp || !prevIni || !prevFim) return;
 
-    var dIni = parseDate(ini);
-
-    if (!dIni) return;
-
+    var dPrevIni = parseDate(prevIni);
+    var dIniParsed = parseDate(ini);
+    var dPrevFim = parseDate(prevFim);
     var dFimParsed = parseDate(fim);
-    var dPrevParsed = parseDate(prev);
-    var dFim = (dFimParsed && dFimParsed >= dIni) ? dFimParsed : dPrevParsed;
+    var dIni = dIniParsed || dPrevIni;
+    var dFim = dFimParsed || dPrevFim;
 
-    if (!dFim) return;
+    if (!dIni || !dFim || dFim < dIni) return;
 
     dIni.setHours(0, 0, 0, 0);
     dFim.setHours(0, 0, 0, 0);

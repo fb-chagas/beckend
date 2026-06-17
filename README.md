@@ -39,5 +39,7 @@ Este repositório contém a primeira versão prática do Web App conectado à pl
   - `Concluído` quando a data fim for menor ou igual à previsão de fim.
   - `Atrasado` quando a data fim for maior que a previsão de fim.
 - O botão de calendário abre diretamente a aba `Calendário` da planilha.
+- O calendário usa a previsão de início/fim para exibir tarefas novas e passa a
+  usar data início/fim reais quando elas forem preenchidas.
 - O painel calcula total de tarefas, quantidades por status e percentual
   concluído.
