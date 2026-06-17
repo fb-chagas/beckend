@@ -384,24 +384,16 @@ function preencherCalendario() {
 
   var lastRow = calSheet.getLastRow();
   var allVals = calSheet.getRange(1, 1, lastRow, 7).getValues();
+  var allDisplayVals = calSheet.getRange(1, 1, lastRow, 7).getDisplayValues();
   var anoAtual = null;
   var mesAtual = null;
 
   for (var r = 0; r < lastRow; r++) {
-    var v0 = allVals[r][0];
+    var mesEncontrado = obterMesCalendario_(allDisplayVals[r][0]);
 
-    if (typeof v0 === "string" && v0.indexOf("2026") !== -1) {
-      MESES_CAL.forEach(function(m) {
-        var dt = new Date(m.ano, m.mes - 1, 1);
-        var nm = dt
-          .toLocaleString("pt-BR", {month: "long"})
-          .toUpperCase();
-
-        if (v0.indexOf(nm) !== -1) {
-          anoAtual = m.ano;
-          mesAtual = m.mes;
-        }
-      });
+    if (mesEncontrado) {
+      anoAtual = mesEncontrado.ano;
+      mesAtual = mesEncontrado.mes;
 
       continue;
     }
@@ -410,7 +402,7 @@ function preencherCalendario() {
 
     for (var c = 0; c < 7; c++) {
       var val = allVals[r][c];
-      var dia = obterDiaCalendario_(val);
+      var dia = obterDiaCalendario_(val) || obterDiaCalendario_(allDisplayVals[r][c]);
 
       if (!dia) continue;
 
@@ -520,6 +512,26 @@ function formatarLinhaTarefa_(sheet, row) {
   sheet.getRange(row, 7, 1, 2).setNumberFormat("dd/MM/yyyy");
 }
 
+function obterMesCalendario_(val) {
+  var texto = normalizarChave_(val);
+
+  if (texto.indexOf("2026") === -1) return null;
+
+  for (var i = 0; i < MESES_CAL.length; i++) {
+    var mes = MESES_CAL[i];
+    var nomeMes = normalizarChave_(
+      new Date(mes.ano, mes.mes - 1, 1)
+        .toLocaleString("pt-BR", {month: "long"})
+    );
+
+    if (texto.indexOf(nomeMes) !== -1) {
+      return mes;
+    }
+  }
+
+  return null;
+}
+
 function obterDiaCalendario_(val) {
   if (typeof val === "number" && val >= 1 && val <= 31) {
     return Math.floor(val);
@@ -535,6 +547,13 @@ function obterDiaCalendario_(val) {
   }
 
   return null;
+}
+
+function normalizarChave_(str) {
+  return normalizar(str)
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
 function normalizar(str) {
