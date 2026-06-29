@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxograma de Investimentos — 3M AGROPECUÁRIA</title>
+  <style>
+    :root {
+      --navy: #003876;
+      --green: #0b610b;
+      --bg-page: #f2f2f2;
+      --bg-1: #eef2f7;
+      --bg-2: #edf5ee;
+      --bg-row-alt: #f8fafc;
+      --border: #cbd5e1;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px 16px 48px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-page);
+      color: #1e293b;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      background: var(--bg-page);
+    }
+
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-wrap img {
+      width: 280px;
+      height: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--navy);
+      font-size: 2rem;
+      letter-spacing: 0.04em;
+      margin: 0 0 36px;
+      font-weight: 700;
+    }
+
+    .section {
+      margin-bottom: 28px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+      padding: 14px 20px;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .section-header.navy { background: var(--navy); }
+    .section-header.green { background: var(--green); }
+
+    .section-body {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      border-left: 5px solid var(--accent);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .section-body.bg-1 { background: var(--bg-1); --accent: var(--navy); }
+    .section-body.bg-2 { background: var(--bg-2); --accent: var(--green); }
+    .section-body.bg-3 { background: #fff; --accent: var(--green); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-body.bg-1 thead th { color: var(--navy); }
+    .section-body.bg-2 thead th { color: var(--green); }
+    .section-body.bg-3 thead th { color: var(--navy); }
+
+    tbody tr:nth-child(odd) { background: #fff; }
+    tbody tr:nth-child(even) { background: var(--bg-row-alt); }
+
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 10px 6px;
+      font: inherit;
+      color: #1e293b;
+      outline: none;
+    }
+
+    td input::placeholder {
+      color: var(--text-muted);
+    }
+
+    td input:focus {
+      background: #fff;
+      box-shadow: inset 0 0 0 2px rgba(0, 56, 118, 0.25);
+      border-radius: 4px;
+    }
+
+    .toolbar {
+      max-width: 1080px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .toolbar button {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--navy);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .toolbar button:hover {
+      background: var(--bg-1);
+    }
+
+    .note {
+      max-width: 1080px;
+      margin: 24px auto 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    @media print {
+      body { padding: 0; background: #fff; }
+      .toolbar, .note { display: none; }
+      td input { box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Imprimir / Salvar PDF</button>
+    <button type="button" onclick="addRowToAll()">Adicionar linha em todas as seções</button>
+  </div>
+
+  <div class="page">
+    <div class="logo-wrap">
+      <img src="logo-3m-agropecuaria.png" alt="3M AGROPECUÁRIA">
+    </div>
+
+    <h1>INVESTIMENTOS</h1>
+
+    <section class="section">
+      <div class="section-header navy">Investimentos em Andamento</div>
+      <div class="section-body bg-1">
+        <table data-section="andamento">
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header green">Investimentos Previstos com Orçamento</div>
+      <div class="section-body bg-2">
+        <table data-section="com-orcamento">
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header navy">Investimentos Previstos sem Orçamento</div>
+      <div class="section-body bg-3">
+        <table data-section="sem-orcamento">
+          <thead>
+            <tr>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Prioridade</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <p class="note">Arquivo editável: clique nos campos para preencher. Para manter os dados, use a planilha Excel incluída na pasta.</p>
+
+  <script>
+    const INITIAL_ROWS = 4;
+
+    function createRow() {
+      const tr = document.createElement('tr');
+      ['Valor', 'Status', 'Prioridade'].forEach((label) => {
+        const td = document.createElement('td');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = label;
+        input.setAttribute('aria-label', label);
+        td.appendChild(input);
+        tr.appendChild(td);
+      });
+      return tr;
+    }
+
+    function fillTables(rows = INITIAL_ROWS) {
+      document.querySelectorAll('table tbody').forEach((tbody) => {
+        tbody.innerHTML = '';
+        for (let i = 0; i < rows; i += 1) {
+          tbody.appendChild(createRow());
+        }
+      });
+    }
+
+    function addRowToAll() {
+      document.querySelectorAll('table tbody').forEach((tbody) => {
+        tbody.appendChild(createRow());
+      });
+    }
+
+    fillTables();
+  </script>
+</body>
+</html>
